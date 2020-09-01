@@ -2,13 +2,13 @@
 $newDeploymentName="AZ204Lab03Deployment"
 $resourceGroupName="StorageMedia"
 $location="East US"
-$storageAccountNameSuffix="az204lab03" # to be updated (yourname)
+$storageAccountNameSuffix=Get-Random -Maximum 100000000
 
 $ParametersObj = @{
     newDeploymentName = $newDeploymentName
     resourceGroupName = $resourceGroupName
     location = $location
-    storageAccountNameSuffix = $storageAccountNameSuffix
+    storageAccountNameSuffix = "$storageAccountNameSuffix"
 }
 
 $storageAccountName="mediastor"+$storageAccountNameSuffix
@@ -22,6 +22,12 @@ $storageAccountKey = (Get-AzStorageAccountKey -ResourceGroupName $resourceGroupN
 # Get Storage Account Context
 $context = New-AzStorageContext -StorageAccountName $storageAccountName -StorageAccountKey $storageAccountKey.value
 
-# Upload blobs
+# Upload images
 Set-AzStorageBlobContent -Context $context -Container "raster-graphics" -File "images/graph.jpg" -Blob "graph.jpg" -Properties @{"ContentType" = "image/jpeg"}
 Set-AzStorageBlobContent -Context $context -Container "vector-graphics" -File "images/graph.svg" -Blob "graph.svg" -Properties @{"ContentType" = "image/svg+xml"}
+
+# Update BlobManager program
+$blobServiceEndpoint = "https://" + $storageAccountName + ".blob.core.windows.net"
+((Get-Content -path BlobManager/Program.cs -Raw) -replace '<primary-blob-service-endpoint>',$blobServiceEndpoint) | Set-Content -Path BlobManager/Program.cs
+((Get-Content -path BlobManager/Program.cs -Raw) -replace '<storage-account-name>',$storageAccountName) | Set-Content -Path BlobManager/Program.cs
+((Get-Content -path BlobManager/Program.cs -Raw) -replace '<key>',$storageAccountKey.value) | Set-Content -Path BlobManager/Program.cs
