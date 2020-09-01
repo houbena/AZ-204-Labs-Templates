@@ -1,5 +1,5 @@
 # Parameters
-param([string] $location = "West Europe")
+param([string] $location = "East US")
 $newDeploymentName="AZ204Lab03Deployment"
 $resourceGroupName="StorageMedia"
 $storageAccountNameSuffix=Get-Random -Maximum 100000000
