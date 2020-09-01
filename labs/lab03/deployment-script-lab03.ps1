@@ -1,7 +1,7 @@
 # Parameters
+param([string] $location = "West Europe")
 $newDeploymentName="AZ204Lab03Deployment"
 $resourceGroupName="StorageMedia"
-$location="East US"
 $storageAccountNameSuffix=Get-Random -Maximum 100000000
 
 $ParametersObj = @{
