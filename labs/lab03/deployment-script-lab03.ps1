@@ -23,5 +23,5 @@ $storageAccountKey = (Get-AzStorageAccountKey -ResourceGroupName $resourceGroupN
 $context = New-AzStorageContext -StorageAccountName $storageAccountName -StorageAccountKey $storageAccountKey.value
 
 # Upload blobs
-Set-AzStorageBlobContent -Context $context -Container "raster-graphics" -File "images/graph.jpg" -Blob "graph.jpg"
-Set-AzStorageBlobContent -Context $context -Container "vector-graphics" -File "images/graph.svg" -Blob "graph.svg"
+Set-AzStorageBlobContent -Context $context -Container "raster-graphics" -File "images/graph.jpg" -Blob "graph.jpg" -Properties @{"ContentType" = "image/jpeg"}
+Set-AzStorageBlobContent -Context $context -Container "vector-graphics" -File "images/graph.svg" -Blob "graph.svg" -Properties @{"ContentType" = "image/svg+xml"}
