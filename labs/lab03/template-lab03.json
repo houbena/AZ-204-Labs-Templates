@@ -1,0 +1,102 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "newDeploymentName": {
+            "type": "string",
+            "defaultValue": "AZ204Lab03Deployment"
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "East US"
+        },
+        "resourceGroupName": {
+            "type": "string",
+            "defaultValue": "StorageMedia"
+        },
+        "storageAccountNameSuffix": {
+            "type": "String",
+            "defaultValue": "az204lab03"
+        },
+        "tags": {
+            "type": "object",
+            "defaultValue": {
+                "type": "lab"
+            }
+        }
+    },
+    "variables": {
+        "storageAccountName": "[concat('mediastor', parameters('storageAccountNameSuffix'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2020-06-01",
+            "name": "[parameters('resourceGroupName')]",
+            "tags": "[parameters('tags')]",
+            "location": "[parameters('location')]",
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-06-01",
+            "name": "[parameters('newDeploymentName')]",
+            "resourceGroup": "[parameters('resourceGroupName')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups/', parameters('resourceGroupName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {},
+                    "variables": {},
+                    "resources": [
+                        {
+                            "type": "Microsoft.Storage/storageAccounts",
+                            "apiVersion": "2019-06-01",
+                            "name": "[variables('storageAccountName')]",
+                            "location": "[parameters('location')]",
+                            "tags": "[parameters('tags')]",
+                            "sku": {
+                                "name": "Standard_RAGRS"
+                            },
+                            "kind": "StorageV2",
+                            "properties": {
+                                "accessTier": "Hot"
+                            },
+                            "resources": [
+                                {
+                                    "type": "blobServices/containers",
+                                    "apiVersion": "2019-06-01",
+                                    "name": "default/compressed-audio",
+                                    "dependsOn": [
+                                        "[variables('storageAccountName')]"
+                                    ]
+                                },
+                                {
+                                    "type": "blobServices/containers",
+                                    "apiVersion": "2019-06-01",
+                                    "name": "default/raster-graphics",
+                                    "dependsOn": [
+                                        "[variables('storageAccountName')]"
+                                    ]
+                                },
+                                {
+                                    "type": "blobServices/containers",
+                                    "apiVersion": "2019-06-01",
+                                    "name": "default/vector-graphics",
+                                    "dependsOn": [
+                                        "[variables('storageAccountName')]"
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}
